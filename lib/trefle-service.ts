@@ -9,11 +9,14 @@ interface TreflePlant {
   slug: string;
   common_name: string;
   scientific_name: string;
-  // ... full Trefle response
+
 }
 
 // Search Trefle API
 export async function searchTrefle(query: string, page = 1) {
+  console.log('🔍 Searching Trefle for:', query);
+  console.log('🔑 API Key exists:', !!TREFLE_API_KEY);
+  
   try {
     const response = await axios.get(`${TREFLE_BASE_URL}/plants/search`, {
       params: {
@@ -24,12 +27,14 @@ export async function searchTrefle(query: string, page = 1) {
       timeout: 10000,
     });
     
+    console.log('✅ Trefle response:', response.data.data?.length, 'results');
     return response.data.data || [];
-  } catch (error) {
-    console.error('Trefle search error:', error);
+  } catch (error: any) {
+    console.error('❌ Trefle search error:', error.response?.data || error.message);
     return [];
   }
 }
+
 
 // Get detailed plant data from Trefle
 export async function fetchTrefleDetails(trefleId: number) {
