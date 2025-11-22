@@ -1,12 +1,12 @@
 "use client"
 
 import { MapPin, Search, Sprout, CheckCircle } from "lucide-react"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGarden } from "@/lib/garden-context"
 import { HARDINESS_ZONES } from "@/lib/mock-data"
 import { useState } from "react"
+import { AddressAutocomplete } from "@/components/address-autocomplete"
 
 interface HomeTabProps {
   onNavigate: (tab: string) => void
@@ -16,12 +16,42 @@ export function HomeTab({ onNavigate }: HomeTabProps) {
   const { preferences, setPreferences, myGarden } = useGarden()
   const [addressInput, setAddressInput] = useState(preferences.address)
   const [showZoneInfo, setShowZoneInfo] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleZoneLookup = () => {
-    // Mock zone lookup - in production this would call USDA API
-    const mockZone = "7b"
-    setPreferences({ zone: mockZone, address: addressInput })
-    setShowZoneInfo(true)
+  const handleZoneLookup = async () => {
+    if (!addressInput.trim()) {
+      setError("Please enter an address or zip code")
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      const response = await fetch('/api/hardiness-zone', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address: addressInput }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch hardiness zone')
+      }
+      
+      if (data.zone) {
+        setPreferences({ zone: data.zone, address: addressInput })
+        setShowZoneInfo(true)
+      } else {
+        setError("Could not determine hardiness zone for this location")
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const zoneInfo = HARDINESS_ZONES.find((z) => z.zone === preferences.zone)
@@ -47,22 +77,43 @@ export function HomeTab({ onNavigate }: HomeTabProps) {
               Find Your Hardiness Zone
             </CardTitle>
             <CardDescription className="text-sm">
-              Enter your address to discover which plants thrive in your climate
+              Enter your address or zip code to discover which plants thrive in your climate
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                placeholder="Enter your address"
+              <AddressAutocomplete
                 value={addressInput}
-                onChange={(e) => setAddressInput(e.target.value)}
+                onChange={setAddressInput}
+                onSelect={setAddressInput}
+                placeholder="Enter address or zip code"
+                disabled={isLoading}
                 className="flex-1"
               />
-              <Button onClick={handleZoneLookup} className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-                <Search className="h-4 w-4 mr-2" />
-                Find Zone
+              <Button 
+                onClick={handleZoneLookup} 
+                className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <span className="animate-spin mr-2">⏳</span>
+                    Looking up...
+                  </>
+                ) : (
+                  <>
+                    <Search className="h-4 w-4 mr-2" />
+                    Find Zone
+                  </>
+                )}
               </Button>
             </div>
+
+            {error && (
+              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md border border-destructive/20">
+                {error}
+              </div>
+            )}
 
             {showZoneInfo && zoneInfo && (
               <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 space-y-2">
@@ -81,7 +132,7 @@ export function HomeTab({ onNavigate }: HomeTabProps) {
           </CardContent>
         </Card>
 
-        {/* Quick Stats */}
+        {/* Rest of your component stays the same... */}
         <div className="grid grid-cols-3 gap-3 md:gap-4">
           <Card>
             <CardContent className="pt-4 md:pt-6">
@@ -126,7 +177,7 @@ export function HomeTab({ onNavigate }: HomeTabProps) {
           </Card>
         </div>
 
-        {/* Next Steps */}
+        {/* Next Steps - same as before */}
         <Card>
           <CardHeader>
             <CardTitle className="text-lg md:text-xl">Get Started</CardTitle>

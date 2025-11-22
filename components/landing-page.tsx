@@ -95,6 +95,13 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               <span className="text-sm text-muted-foreground">© 2025 Cultivate. All rights reserved.</span>
             </div>
             <p className="text-sm text-muted-foreground">Made for gardeners, by gardeners</p>
+
+            <p className="text-xs text-muted-foreground">
+              Plant data provided by{' '}
+              <a href="https://trefle.io" target="_blank" rel="noopener">Trefle.io</a> (CC BY-SA 4.0),{' '}
+              <a href="https://openfarm.cc" target="_blank" rel="noopener">OpenFarm</a> (CC0), and{' '}
+              USDA Plants Database (Public Domain)
+            </p>
           </div>
         </div>
       </footer>
