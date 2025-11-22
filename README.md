@@ -21,7 +21,7 @@ Cultivate helps gardeners worldwide:
 
 #### 1. **Hardiness Zone Detection** ✅ COMPLETE
 Smart address-to-zone conversion with intelligent caching.
-```
+\`\`\`
 User Address Input
     ↓
 [Cache Check] → Found? Return instantly
@@ -33,11 +33,11 @@ User Address Input
 [Cache Result] → Store for future lookups
     ↓
 Return to user
-```
+\`\`\`
 
 #### 2. **Plant Database** 🚧 IN PROGRESS
 On-demand plant data loading with Trefle.io integration.
-```
+\`\`\`
 User Plant Search
     ↓
 [Database Check] → Found? Return instantly
@@ -47,7 +47,7 @@ User Plant Search
 [Cache Plant] → Store in database
     ↓
 Return to user
-```
+\`\`\`
 
 ---
 
@@ -125,7 +125,7 @@ Return to user
 ## 💾 Database Schema
 
 ### Hardiness Zone Caching
-```sql
+\`\`\`sql
 CREATE TABLE geocoded_addresses (
   id SERIAL PRIMARY KEY,
   full_address TEXT UNIQUE NOT NULL,
@@ -141,10 +141,10 @@ CREATE TABLE geocoded_addresses (
   lookup_count INTEGER DEFAULT 1,
   created_at TIMESTAMP DEFAULT NOW()
 );
-```
+\`\`\`
 
 ### Plant Database
-```sql
+\`\`\`sql
 CREATE TABLE plants (
   id SERIAL PRIMARY KEY,
   trefle_id INTEGER UNIQUE NOT NULL,
@@ -163,7 +163,7 @@ CREATE TABLE plants (
   trefle_data JSONB,
   created_at TIMESTAMP DEFAULT NOW()
 );
-```
+\`\`\`
 
 ---
 
@@ -204,7 +204,7 @@ For 1,000 users looking up the same address:
 - Trefle.io account (for plant data)
 
 ### Installation
-```bash
+\`\`\`bash
 # Clone the repository
 git clone https://github.com/yourusername/cultivate.git
 cd cultivate
@@ -215,10 +215,10 @@ npm install --legacy-peer-deps
 # Set up environment variables
 cp .env.example .env.local
 # Edit .env.local with your API keys
-```
+\`\`\`
 
 ### Environment Variables
-```env
+\`\`\`env
 # Database
 NEON_DATABASE_URL=postgresql://user:password@host/database
 
@@ -227,10 +227,10 @@ GOOGLE_MAPS_API_KEY_SERVER=your_google_api_key
 
 # Plant Data
 TREFLE_API_KEY=your_trefle_api_key
-```
+\`\`\`
 
 ### Database Setup
-```bash
+\`\`\`bash
 # Connect to your Neon database
 # Run the SQL scripts in order:
 
@@ -239,29 +239,29 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 # 2. Create tables (see Database Schema section)
 # 3. Create indexes
-```
+\`\`\`
 
 ### Running the App
-```bash
+\`\`\`bash
 # Development
 npm run dev
 
 # Production build
 npm run build
 npm start
-```
+\`\`\`
 
 ---
 
 ## 📡 API Documentation
 
 ### Address Autocomplete
-```bash
+\`\`\`bash
 GET /api/address-autocomplete?input=91202
-```
+\`\`\`
 
 **Response:**
-```json
+\`\`\`json
 {
   "predictions": [
     {
@@ -270,20 +270,20 @@ GET /api/address-autocomplete?input=91202
     }
   ]
 }
-```
+\`\`\`
 
 ### Hardiness Zone Lookup
-```bash
+\`\`\`bash
 POST /api/hardiness-zone
 Content-Type: application/json
 
 {
   "address": "Glendale, CA 91202"
 }
-```
+\`\`\`
 
 **Response:**
-```json
+\`\`\`json
 {
   "zone": "10a",
   "lat": 34.1622948,
@@ -291,15 +291,15 @@ Content-Type: application/json
   "full_address": "Glendale, CA 91202, USA",
   "cached": false
 }
-```
+\`\`\`
 
 ### Plant Search
-```bash
+\`\`\`bash
 GET /api/plants?q=tomato&zone=10a&limit=20
-```
+\`\`\`
 
 **Response:**
-```json
+\`\`\`json
 {
   "plants": [
     {
@@ -315,12 +315,12 @@ GET /api/plants?q=tomato&zone=10a&limit=20
   "count": 1,
   "source": "cache"
 }
-```
+\`\`\`
 
 ### Plant Details
-```bash
+\`\`\`bash
 GET /api/plants/123
-```
+\`\`\`
 
 ---
 
@@ -338,13 +338,13 @@ We use the **World Geographical Scheme for Recording Plant Distributions** to ac
 | 36 | China | China, Taiwan |
 
 ### Query Native Plants
-```bash
+\`\`\`bash
 # Plants native to California
 GET /api/plants?native_region=76&zone=10a
 
 # Plants native to Australia
 GET /api/plants?native_region=50
-```
+\`\`\`
 
 ---
 

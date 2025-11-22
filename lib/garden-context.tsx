@@ -1,45 +1,14 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
-import type { Plant } from "./mock-data"
-
-interface GardenPreferences {
-  zone: string
-  address: string
-  edibleOnly: boolean
-  seasons: string[]
-  nativeOnly: boolean
-}
-
-interface GardenPlant extends Plant {
-  addedAt: string
-}
-
-interface GardenLayout {
-  width: number
-  length: number
-  photoUrl?: string
-  shapeType: "rectangle" | "custom" | "l-shape" | "curved"
-  customPoints?: { x: number; y: number }[]
-  area?: number
-}
-
-interface CareTask {
-  id: string
-  plantId: string
-  plantName: string
-  task: string
-  frequency: string
-  timeOfDay: string
-  nextDue: string
-}
+import type { Plant, GardenPreferences, GardenPlant, GardenLayout, CareTask } from "./types"
 
 interface GardenContextType {
   preferences: GardenPreferences
   setPreferences: (prefs: Partial<GardenPreferences>) => void
   myGarden: GardenPlant[]
   addPlant: (plant: Plant) => void
-  removePlant: (plantId: string) => void
+  removePlant: (plantId: number) => void
   layout: GardenLayout
   setLayout: (layout: Partial<GardenLayout>) => void
   careTasks: CareTask[]
@@ -70,10 +39,10 @@ export function GardenProvider({ children }: { children: ReactNode }) {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const savedPrefs = localStorage.getItem("gardenPreferences")
-    const savedGarden = localStorage.getItem("myGarden")
-    const savedLayout = localStorage.getItem("gardenLayout")
-    const savedTasks = localStorage.getItem("careTasks")
+    const savedPrefs = localStorage.getItem("cultivatePreferences")
+    const savedGarden = localStorage.getItem("cultivateGarden")
+    const savedLayout = localStorage.getItem("cultivateLayout")
+    const savedTasks = localStorage.getItem("cultivateTasks")
 
     if (savedPrefs) setPreferencesState(JSON.parse(savedPrefs))
     if (savedGarden) setMyGarden(JSON.parse(savedGarden))
@@ -83,19 +52,19 @@ export function GardenProvider({ children }: { children: ReactNode }) {
 
   // Save to localStorage whenever state changes
   useEffect(() => {
-    localStorage.setItem("gardenPreferences", JSON.stringify(preferences))
+    localStorage.setItem("cultivatePreferences", JSON.stringify(preferences))
   }, [preferences])
 
   useEffect(() => {
-    localStorage.setItem("myGarden", JSON.stringify(myGarden))
+    localStorage.setItem("cultivateGarden", JSON.stringify(myGarden))
   }, [myGarden])
 
   useEffect(() => {
-    localStorage.setItem("gardenLayout", JSON.stringify(layout))
+    localStorage.setItem("cultivateLayout", JSON.stringify(layout))
   }, [layout])
 
   useEffect(() => {
-    localStorage.setItem("careTasks", JSON.stringify(careTasks))
+    localStorage.setItem("cultivateTasks", JSON.stringify(careTasks))
   }, [careTasks])
 
   const setPreferences = (prefs: Partial<GardenPreferences>) => {
@@ -110,9 +79,9 @@ export function GardenProvider({ children }: { children: ReactNode }) {
     setMyGarden((prev) => [...prev, gardenPlant])
   }
 
-  const removePlant = (plantId: string) => {
+  const removePlant = (plantId: number) => {
     setMyGarden((prev) => prev.filter((p) => p.id !== plantId))
-    setCareTasks((prev) => prev.filter((t) => t.plantId !== plantId))
+    setCareTasks((prev) => prev.filter((t) => Number(t.plantId) !== plantId))
   }
 
   const setLayout = (newLayout: Partial<GardenLayout>) => {

@@ -4,7 +4,7 @@ import { MapPin, Search, Sprout, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { useGarden } from "@/lib/garden-context"
-import { HARDINESS_ZONES } from "@/lib/mock-data"
+import { HARDINESS_ZONES } from "@/lib/constants"
 import { useState } from "react"
 import { AddressAutocomplete } from "@/components/address-autocomplete"
 
@@ -27,20 +27,20 @@ export function HomeTab({ onNavigate }: HomeTabProps) {
 
     setIsLoading(true)
     setError(null)
-    
+
     try {
-      const response = await fetch('/api/hardiness-zone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/hardiness-zone", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ address: addressInput }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch hardiness zone')
+        throw new Error(data.error || "Failed to fetch hardiness zone")
       }
-      
+
       if (data.zone) {
         setPreferences({ zone: data.zone, address: addressInput })
         setShowZoneInfo(true)
@@ -90,8 +90,8 @@ export function HomeTab({ onNavigate }: HomeTabProps) {
                 disabled={isLoading}
                 className="flex-1"
               />
-              <Button 
-                onClick={handleZoneLookup} 
+              <Button
+                onClick={handleZoneLookup}
                 className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
                 disabled={isLoading}
               >
